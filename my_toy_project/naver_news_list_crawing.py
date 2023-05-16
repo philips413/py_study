@@ -5,15 +5,23 @@ from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 
-response = urlopen("https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=101")
+naver_news_sidList = [
+    {"name": "정치", "sid": 100},
+    {"name": "경제", "sid": 101},
+    {"name": "사회", "sid": 102},
+    {"name": "생활/문화", "sid": 103},
+    {"name": "IT/과학", "sid": 105}
+]
 
-soup = BeautifulSoup(response, 'html.parser')
-value = soup.find("ul", {"class":"sh_list"})
+for newsAgenda in naver_news_sidList :
+    response = urlopen(f"https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1={newsAgenda.get('sid')}")
 
-newArray = value.select("li", {"class": "sh_item _cluster_content"})
-for index, item in enumerate(newArray) :
-    print(f"======================{index}================")
-    headline = item.find("a", {"class": "sh_text_headline"})
-    aLink = headline["href"]
-    headLineTitle = headline.text
-    print(f"{headLineTitle} : {aLink}")
+    soup = BeautifulSoup(response, 'html.parser')
+    value = soup.find("ul", {"class":"sh_list"})
+
+    newArray = value.select("li", {"class": "sh_item _cluster_content"})
+    for index, item in enumerate(newArray) :
+        headline = item.find("a", {"class": "sh_text_headline"})
+        aLink = headline["href"]
+        headLineTitle = headline.text
+        print(f"{headLineTitle} : {aLink}")
